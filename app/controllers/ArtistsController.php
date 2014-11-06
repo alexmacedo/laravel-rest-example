@@ -10,7 +10,14 @@ class ArtistsController extends \BaseController {
     public function index()
     {
         $artists = Artist::with('albums')->get();
-        return Response::json($artists);
+
+        $response = array(
+            "error" => KK::teste_alex(),
+            "message" => KK::_("<a>banana</a>"),
+            "data" => $artists,
+        );
+
+        return Response::json($response);
     }
 
 

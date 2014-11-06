@@ -11,12 +11,12 @@
 |
 */
 
-Route::filter('bananas', function ($route, $request) {
+Route::filter('alexlog', function ($route, $request) {
     $from = $request->get("from");
-    if ($passwd !== 'banana') {
-        $json = array("error" => "true", "message" => "Se fudeu!");
-        return Response::json($json, 401);
+    if (!empty($from)) {
+        Log::info("Acesso from {$from}");
     }
+
 });
 
 Route::filter('alex', function ($route, $request) {
@@ -27,7 +27,18 @@ Route::filter('alex', function ($route, $request) {
     }
 });
 
-Route::group(array('prefix' => 'api/v1', 'before' => array('alex'), 'after' => 'bananas'), function() {
+Route::filter('alexlang', function ($route, $request) {
+
+    $lang = strtolower($request->get("lang"));
+
+    if (in_array($lang, array('en', 'pt', 'es_cl', 'es_ar'))) {
+        App::setLocale($lang);
+    }
+});
+
+
+
+Route::group(array('prefix' => 'api/v1', 'before' => array('alex', 'alexlang'), 'after' => 'alexlog'), function() {
     Route::resource('artists', 'ArtistsController',
         array('except' => array('create', 'edit'))
     );
