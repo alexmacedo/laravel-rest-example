@@ -9,7 +9,7 @@ class ArtistsController extends \BaseController {
      */
     public function index()
     {
-        $artists = Artist::all();
+        $artists = Artist::with('albums')->get();
         return Response::json($artists);
     }
 
@@ -33,8 +33,8 @@ class ArtistsController extends \BaseController {
     public function store()
     {
         $artist = new Artist;
-        $artist->name = Request::get('name');
-        $artist->active = Request::get('active');
+        $artist->name = Input::get('name');
+        $artist->active = Input::get('active');
         $artist->save();
 
         return Response::json(array(
@@ -77,7 +77,22 @@ class ArtistsController extends \BaseController {
      */
     public function update($id)
     {
-        //
+        $artist = Artist::find($id);
+
+        if (Input::has('name')) {
+            $artist->name = Input::get('name');
+        }
+
+        if (Input::has('active')) {
+            $artist->active = Input::get('active');
+        }
+
+        $artist->save();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Artist updated.'
+        ), 200);
     }
 
 
@@ -89,7 +104,13 @@ class ArtistsController extends \BaseController {
      */
     public function destroy($id)
     {
-        //
+        $artist = Artist::find($id);
+        $artist->delete();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Artist deleted.'
+        ));
     }
 
 
